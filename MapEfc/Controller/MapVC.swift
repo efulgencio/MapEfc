@@ -27,6 +27,7 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
     var collectionView: UICollectionView?
     var imageArray = [UIImage]()
     
+    
      override func viewDidLoad() {
             super.viewDidLoad()
             mapView.delegate = self
@@ -42,7 +43,6 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
             collectionView?.backgroundColor = #colorLiteral(red: 0.9999960065, green: 1, blue: 1, alpha: 1)
         
             registerForPreviewing(with: self, sourceView: collectionView!)
-        
     
             pullUpView.addSubview(collectionView!)
         }
@@ -94,6 +94,17 @@ class MapVC: UIViewController, UIGestureRecognizerDelegate {
                 centerMapOnUserLocation()
             }
         }
+    
+    func makeContextMenu() -> UIMenu {
+
+        // Create a UIAction for sharing
+        let share = UIAction(title: "Share Pupper", image: UIImage(systemName: "square.and.arrow.up")) { action in
+            // Show system share sheet
+        }
+
+        // Create and return a UIMenu with the share action
+        return UIMenu(title: "Main Menu", children: [share])
+    }
 }
 
 extension MapVC: MKMapViewDelegate {
@@ -208,20 +219,36 @@ extension MapVC: UICollectionViewDelegate, UICollectionViewDataSource {
         popVC.initData(forImage: imageArray[indexPath.row])
         present(popVC, animated: true, completion: nil)
     }
+    
+// Muestra opciones con en la imagen seleccionada
+//    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        let configuration = UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { actions -> UIMenu? in
+//            let action = UIAction(title: "Archive", image: UIImage(systemName: "archivebox.fill"), identifier: .none) { action in
+//                let alert = UIAlertController(title: action.title, message: nil, preferredStyle: .alert)
+//                alert.addAction(.init(title: "OK", style: .cancel, handler: nil))
+//                self.present(alert, animated: true, completion: nil)
+//            }
+//            
+//            return UIMenu.init(title: "Menu", children: [action])
+//        }
+//        return configuration
+//    }
+    
 }
 
 extension MapVC: UIViewControllerPreviewingDelegate {
+
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
         guard let indexPath = collectionView?.indexPathForItem(at: location), let cell = collectionView?.cellForItem(at: indexPath) else { return nil }
-        
+
         guard let popVC = storyboard?.instantiateViewController(withIdentifier: "PopVC") as? PopVC else { return nil }
-        
+
         popVC.initData(forImage: imageArray[indexPath.row])
-        
+
         previewingContext.sourceRect = cell.contentView.frame
         return popVC
     }
-    
+
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
         show(viewControllerToCommit, sender: self)
     }
